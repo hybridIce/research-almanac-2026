@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f0e8">
+  <meta name="description" content="2026 科研黄历：逐日按真实黄历宜忌映射科研人的宜与忌，兼顾节日、调休与重要纪念日。">
+  <title>研历 2026 · 科研人的宜与忌</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f0e8;
+      --card: #fffdf8;
+      --ink: #263b36;
+      --muted: #76827a;
+      --line: #d8dcd1;
+      --green: #2d6151;
+      --green-pale: #e8f0e8;
+      --red: #ae624a;
+      --red-pale: #f8ece6;
+      --gold: #c99643;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { min-width: 320px; margin: 0; }
+    button { font: inherit; }
+    a { color: inherit; }
+
+    .page {
+      max-width: 1540px;
+      min-height: 100vh;
+      margin: auto;
+      padding: clamp(18px, 3vw, 48px);
+      background:
+        radial-gradient(circle at 95% 3%, #e5e9dd 0, transparent 30%),
+        radial-gradient(circle at 2% 92%, #ebe6d9 0, transparent 28%);
+    }
+
+    .masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 30px;
+      padding: 6px 2px 31px;
+      border-bottom: 1px solid #bac7b8;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .22em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(45px, 6.8vw, 90px);
+      line-height: .98;
+      font-weight: 830;
+      letter-spacing: -.08em;
+    }
+
+    h1 span {
+      margin-left: .14em;
+      color: var(--red);
+      font-family: Georgia, serif;
+      font-size: .67em;
+      font-weight: 500;
+      letter-spacing: -.045em;
+    }
+
+    .intro {
+      max-width: 630px;
+      margin: 16px 0 0;
+      color: #5b6c64;
+      font-size: clamp(14px, 1.3vw, 17px);
+      line-height: 1.75;
+    }
+
+    .mast-mark {
+      flex: none;
+      display: grid;
+      width: 116px;
+      height: 116px;
+      place-items: center;
+      border: 1.5px solid var(--green);
+      border-radius: 50%;
+      color: var(--green);
+      transform: rotate(10deg);
+    }
+
+    .mast-mark span {
+      width: 81px;
+      height: 81px;
+      display: grid;
+      place-items: center;
+      border: 1px dashed var(--green);
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.72fr) minmax(340px, .95fr);
+      gap: 22px;
+      margin-top: 26px;
+      align-items: start;
+    }
+
+    .calendar-card, .day-card, .events-card {
+      border: 1px solid #d6d9cf;
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: 0 15px 35px #5062580d;
+    }
+
+    .calendar-card { overflow: hidden; }
+    .calendar-top { padding: 27px 30px 21px; }
+    .calendar-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+    .month-kicker { margin: 0 0 4px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .18em; }
+    .month-title { margin: 0; font-size: clamp(26px, 3vw, 39px); letter-spacing: -.06em; }
+    .nav { display: flex; gap: 8px; }
+    .nav button, .today-button {
+      display: inline-grid;
+      place-items: center;
+      min-width: 40px;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      transition: background .18s, border-color .18s, transform .18s;
+    }
+    .nav button:hover:not(:disabled), .today-button:hover { background: var(--green-pale); border-color: #a6c1ae; transform: translateY(-1px); }
+    .nav button:disabled { cursor: default; opacity: .35; }
+    .today-button { padding: 0 12px; font-size: 12px; font-weight: 700; }
+
+    .months {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 5px;
+      margin-top: 26px;
+    }
+    .months button {
+      min-height: 34px;
+      padding: 4px 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #748178;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .months button:hover { background: var(--green-pale); color: var(--green); }
+    .months button.active { background: var(--green); color: white; }
+
+    .weekdays, .dates { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .weekdays {
+      padding: 0 20px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #f4f6f0;
+    }
+    .weekdays span { padding: 15px 4px; text-align: center; color: #758279; font-size: 12px; font-weight: 800; }
+    .weekdays span:nth-last-child(-n+2) { color: var(--red); }
+    .dates { padding: 10px 20px 18px; }
+    .date-blank { min-height: 99px; }
+
+    .date {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      min-width: 0;
+      min-height: 99px;
+      padding: 12px 9px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+    .date:hover { border-color: #c2d6c7; background: #f1f7f0; }
+    .date.selected { border-color: var(--green); background: var(--green-pale); box-shadow: inset 0 0 0 1px var(--green); }
+    .date.memorial-date:hover, .date.memorial-date.selected { border-color: #88908b; background: #e7e9e5; box-shadow: inset 0 0 0 1px #88908b; }
+    .date.rest-date .date-number { color: var(--red); }
+    .date-number { font-family: Georgia, serif; font-size: 23px; line-height: 1; }
+    .date.today .date-number { text-decoration: underline; text-decoration-color: var(--gold); text-underline-offset: 5px; }
+    .date-label { max-width: 100%; overflow: hidden; color: #687970; font-size: 11px; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+    .date.has-event .date-label { color: var(--ink); font-weight: 750; }
+    .date-advice { max-width: 100%; overflow: hidden; color: var(--green); font-size: 10px; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+    .memorial-date .date-advice { color: #67716c; }
+    .status-chip {
+      position: absolute;
+      top: 11px;
+      right: 8px;
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border-radius: 5px;
+      background: #f7e8e0;
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 900;
+    }
+    .status-chip.work { background: #e7eee9; color: var(--green); }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      padding: 15px 29px 21px;
+      border-top: 1px solid var(--line);
+      color: #718078;
+      font-size: 12px;
+    }
+    .legend b { color: var(--red); }
+    .legend .work-letter { color: var(--green); }
+    .legend .solemn-dot { color: #66716c; }
+
+    .sidebar { display: grid; gap: 20px; }
+    .day-card { overflow: hidden; }
+    .detail-head {
+      position: relative;
+      min-height: 245px;
+      padding: 29px 30px 26px;
+      overflow: hidden;
+      background: var(--green);
+      color: #fffdf6;
+    }
+    .detail-head::after {
+      content: "研";
+      position: absolute;
+      top: -35px;
+      right: -4px;
+      color: #ffffff12;
+      font-family: Georgia, serif;
+      font-size: 245px;
+      line-height: 1;
+      pointer-events: none;
+    }
+    .day-card.memorial .detail-head { background: #46504d; }
+    .detail-topline { display: flex; justify-content: space-between; gap: 12px; position: relative; z-index: 1; }
+    .detail-topline span { font-size: 11px; font-weight: 800; letter-spacing: .16em; }
+    .detail-status { display: inline-block; padding: 5px 9px; border: 1px solid #ffffff66; border-radius: 99px; letter-spacing: .02em !important; }
+    .detail-date { position: relative; z-index: 1; display: flex; align-items: baseline; gap: 15px; margin-top: 16px; }
+    .detail-date strong { font-family: Georgia, serif; font-size: 99px; font-weight: 400; line-height: .95; letter-spacing: -.07em; }
+    .detail-date div { font-size: 15px; line-height: 1.65; }
+    .detail-name { position: relative; z-index: 1; margin: 7px 0 0; font-size: 21px; font-weight: 750; line-height: 1.4; }
+    .detail-body { padding: 26px 30px 29px; }
+    .detail-description { margin: 0 0 23px; color: #65756b; font-size: 14px; line-height: 1.75; }
+    .advice-block + .advice-block { margin-top: 20px; }
+    .advice-title { display: flex; align-items: center; gap: 9px; margin: 0 0 9px; font-size: 15px; font-weight: 800; }
+    .advice-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .advice-title.good { color: var(--green); }
+    .advice-title.bad { color: var(--red); }
+    .advice-items { display: grid; gap: 8px; }
+    .advice-pair { display: grid; grid-template-columns: minmax(65px, auto) 12px 1fr; align-items: center; gap: 8px; padding: 10px 11px; border-radius: 9px; background: var(--green-pale); color: #2e594c; font-size: 12px; line-height: 1.45; }
+    .advice-block.bad .advice-pair { background: var(--red-pale); color: #95563f; }
+    .advice-origin { font-weight: 750; white-space: nowrap; }
+    .advice-arrow { opacity: .5; }
+    .advice-result { font-weight: 650; }
+    .almanac-details { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); color: #66766d; font-size: 12px; line-height: 1.7; }
+    .almanac-details summary { color: var(--green); font-weight: 750; cursor: pointer; }
+    .almanac-details p { margin: 9px 0 0; }
+    .almanac-details b { color: var(--ink); }
+    .memorial-note { padding: 18px; border-left: 3px solid #78847d; border-radius: 0 8px 8px 0; background: #eff0eb; color: #3e4a44; font-size: 14px; line-height: 1.8; }
+    .source-link { display: inline-block; margin-top: 22px; color: var(--green); font-size: 12px; font-weight: 700; text-underline-offset: 3px; }
+
+    .events-card { padding: 25px 28px 27px; }
+    .events-card h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.02em; }
+    .events-card > p { margin: 0 0 18px; color: var(--muted); font-size: 12px; }
+    .event-list { display: grid; gap: 5px; }
+    .event-list button {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 9px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink);
+      text-align: left;
+      cursor: pointer;
+    }
+    .event-list button:hover { background: #f1f5ef; }
+    .event-day { color: var(--red); font-family: Georgia, serif; font-size: 20px; }
+    .event-title { overflow: hidden; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .event-kind { color: #7e8980; font-size: 11px; }
+    .empty-events { color: var(--muted); font-size: 13px; line-height: 1.7; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 28px;
+      padding: 23px 2px 0;
+      border-top: 1px solid #bac7b8;
+      color: #6c786e;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    footer p { max-width: 660px; margin: 0; }
+    footer .sources { text-align: right; }
+    footer a { color: var(--green); text-underline-offset: 3px; }
+    :focus-visible { outline: 3px solid #c99643; outline-offset: 2px; }
+
+    @media (max-width: 1000px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { grid-template-columns: 1fr 1fr; align-items: start; }
+    }
+    @media (max-width: 700px) {
+      .page { padding: 14px; }
+      .masthead { padding: 16px 4px 25px; }
+      .mast-mark { display: none; }
+      .calendar-top { padding: 20px 17px 14px; }
+      .calendar-toolbar { gap: 7px; }
+      .month-kicker { font-size: 9px; letter-spacing: .08em; white-space: nowrap; }
+      .month-title { font-size: 25px; }
+      .nav { flex: none; gap: 4px; }
+      .nav button { min-width: 34px; height: 36px; }
+      .nav .today-button { min-width: 66px; padding: 0 6px; white-space: nowrap; }
+      .months { grid-template-columns: repeat(6, 1fr); margin-top: 16px; }
+      .weekdays { padding: 0 6px; }
+      .dates { padding: 6px; }
+      .date-blank, .date { min-height: 73px; }
+      .date { gap: 3px; padding: 8px 5px; }
+      .date-number { font-size: 19px; }
+      .date-label { font-size: 9px; }
+      .date:not(.has-event) .date-label { display: none; }
+      .date-advice { display: none; }
+      .status-chip { top: 5px; right: 4px; width: 17px; height: 17px; font-size: 9px; }
+      .legend { padding: 12px 16px 17px; }
+      .sidebar { grid-template-columns: 1fr; }
+      footer { display: block; }
+      footer .sources { margin-top: 12px; text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">LAB ALMANAC · 一年 365 天的研究手记</p>
+        <h1>研历 <span>2026</span></h1>
+        <p class="intro">真正的逐日黄历宜忌，映射到投稿、实验、写作与合作。点开日期，可核对当天的原始条目和科研对应项。</p>
+      </div>
+      <div class="mast-mark" aria-hidden="true"><span>2026<br>研历</span></div>
+    </header>
+
+    <main class="layout">
+      <section class="calendar-card" aria-label="2026 年科研日历">
+        <div class="calendar-top">
+          <div class="calendar-toolbar">
+            <div>
+              <p class="month-kicker">MONTHLY RESEARCH NOTES</p>
+              <h2 class="month-title" id="month-title"></h2>
+            </div>
+            <div class="nav">
+              <button type="button" id="prev-month" aria-label="上个月">←</button>
+              <button type="button" id="today-button" class="today-button">回到今天</button>
+              <button type="button" id="next-month" aria-label="下个月">→</button>
+            </div>
+          </div>
+          <div class="months" id="months" aria-label="选择月份"></div>
+        </div>
+        <div class="weekdays" aria-hidden="true">
+          <span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span><span>周日</span>
+        </div>
+        <div class="dates" id="dates" role="grid" aria-label="日期"></div>
+        <div class="legend">
+          <span><b>休</b> 2026 年放假安排</span>
+          <span><b class="work-letter">班</b> 调休上班</span>
+          <span><b class="solemn-dot">●</b> 庄重纪念日</span>
+          <span>今天的日期有下划线</span>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <section class="day-card" id="day-card" aria-live="polite"></section>
+        <section class="events-card">
+          <h2>这个月，值得记住</h2>
+          <p>节日、科研主题日与纪念日</p>
+          <div class="event-list" id="event-list"></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer>
+      <p>每日宜忌取自 <a href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener noreferrer">lunar-javascript v1.7.7</a>，科研对应项是趣味类比，并非投稿时机或学术决策建议。不同黄历版本可能有差异。庄重纪念日不展示娱乐化映射；放假调休仅适用于中国内地。</p>
+      <p class="sources"><a href="./research-calendar-2026-en.html">English edition →</a><br>日期依据：<a href="https://www.gov.cn/zhengce/zhengceku/202511/content_7047091.htm" target="_blank" rel="noopener noreferrer">国务院 2026 年放假通知</a> · <a href="https://www.mod.gov.cn/gfbw/tp_214132/16487072.html" target="_blank" rel="noopener noreferrer">九一八纪念资料</a> · <a href="https://www.nanjing.gov.cn/zdgk/201812/t20181211_1296142.html" target="_blank" rel="noopener noreferrer">国家公祭日资料</a></p>
+    </footer>
+  </div>
+
+  <script src="./almanac-2026.js"></script>
+  <script src="./research-mapping.js"></script>
+  <script>
+    const YEAR = 2026;
+    const monthNames = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
+    const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+    const pad = number => String(number).padStart(2, "0");
+    const keyOf = (month, day) => `${pad(month + 1)}-${pad(day)}`;
+
+    const restDays = new Set();
+    function markRange(startMonth, startDay, endMonth, endDay) {
+      const start = Date.UTC(YEAR, startMonth - 1, startDay);
+      const end = Date.UTC(YEAR, endMonth - 1, endDay);
+      for (let time = start; time <= end; time += 86400000) {
+        const date = new Date(time);
+        restDays.add(`${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())}`);
+      }
+    }
+    markRange(1, 1, 1, 3);
+    markRange(2, 15, 2, 23);
+    markRange(4, 4, 4, 6);
+    markRange(5, 1, 5, 5);
+    markRange(6, 19, 6, 21);
+    markRange(9, 25, 9, 27);
+    markRange(10, 1, 10, 7);
+    const adjustedWorkdays = new Set(["01-04", "02-14", "02-28", "05-09", "09-20", "10-10"]);
+
+    const SOURCES = {
+      holidays: "https://www.gov.cn/zhengce/zhengceku/202511/content_7047091.htm",
+      sep18: "https://www.mod.gov.cn/gfbw/tp_214132/16487072.html",
+      jul07: "https://www.fmprc.gov.cn/ziliao_674904/historytoday_674971/200307/t20030707_9284603.shtml",
+      sep03: "https://www.fmprc.gov.cn/web/ziliao_674904/historytoday_674971/200309/t20030903_9284634.shtml",
+      sep30: "https://www.npc.gov.cn/c2/c30834/202305/t20230511_429398.html",
+      dec13: "https://www.nanjing.gov.cn/zdgk/201812/t20181211_1296142.html",
+      scientists: "https://app.www.gov.cn/govdata/gov/201612/13/394954/article.html"
+    };
+
+    // Commemorations deliberately do not receive playful 宜/忌 text.
+    const special = {
+      "01-01": { name: "元旦", kind: "festival", source: SOURCES.holidays },
+      "02-16": { name: "除夕", kind: "festival", source: SOURCES.holidays },
+      "02-17": { name: "春节", kind: "festival", source: SOURCES.holidays },
+      "03-03": { name: "元宵节", kind: "festival" },
+      "03-08": { name: "国际妇女节", kind: "festival" },
+      "03-12": { name: "植树节", kind: "festival" },
+      "04-05": { name: "清明节", kind: "memorial", text: "清明，追思故人。", note: "尊重不同的纪念方式；今天不展示趣味科研宜忌。", source: SOURCES.holidays },
+      "04-26": { name: "世界知识产权日", kind: "science" },
+      "05-01": { name: "劳动节", kind: "festival", source: SOURCES.holidays },
+      "05-04": { name: "青年节", kind: "festival" },
+      "05-30": { name: "全国科技工作者日", kind: "science", source: SOURCES.scientists },
+      "06-01": { name: "儿童节", kind: "festival" },
+      "06-05": { name: "世界环境日", kind: "science" },
+      "06-19": { name: "端午节", kind: "festival", source: SOURCES.holidays },
+      "07-07": { name: "中国人民抗日战争纪念日", kind: "memorial", text: "铭记七七事变，缅怀先辈，珍爱和平。", note: "涉及历史事实时，应使用可靠史料并保持表达严肃；今天不展示趣味科研宜忌。", source: SOURCES.jul07 },
+      "08-01": { name: "建军节", kind: "festival" },
+      "09-03": { name: "中国人民抗日战争胜利纪念日", kind: "memorial", text: "致敬先辈，铭记历史，珍爱和平。", note: "用准确史实讲述历史，不将纪念日当作科研玩笑素材。", source: SOURCES.sep03 },
+      "09-10": { name: "教师节", kind: "festival" },
+      "09-18": { name: "九一八事变纪念日", kind: "memorial", text: "铭记九一八，缅怀遇难者，珍爱和平。", note: "今天暂停趣味科研宜忌。阅读与传播历史内容时，请核对史料，尊重这一天的严肃性。", source: SOURCES.sep18 },
+      "09-25": { name: "中秋节", kind: "festival", source: SOURCES.holidays },
+      "09-30": { name: "烈士纪念日", kind: "memorial", text: "缅怀英烈，铭记他们为和平与家国作出的牺牲。", note: "今天只保留庄重纪念提醒，不展示趣味科研宜忌。", source: SOURCES.sep30 },
+      "10-01": { name: "国庆节", kind: "festival", source: SOURCES.holidays },
+      "10-10": { name: "世界精神卫生日", kind: "science" },
+      "11-10": { name: "世界科学日", kind: "science" },
+      "12-13": { name: "南京大屠杀死难者国家公祭日", kind: "memorial", text: "悼念死难同胞，铭记历史，珍爱和平。", note: "今天不展示趣味科研宜忌。请以严肃、准确的方式了解与表达这段历史。", source: SOURCES.dec13 }
+    };
+
+    function isWeekend(date) { return date.getDay() === 0 || date.getDay() === 6; }
+    function getData(month, day) {
+      const key = keyOf(month, day);
+      const meta = special[key] || {};
+      const [originalYi, originalJi] = ALMANAC_2026[key];
+      return {
+        ...meta,
+        name: meta.name || "黄历宜忌 · 科研映射",
+        originalYi,
+        originalJi,
+        good: mappedEntries(originalYi).map(source => ({ source, action: RESEARCH_MAP[source][1] })),
+        bad: mappedEntries(originalJi).map(source => ({ source, action: RESEARCH_DONT_OVERRIDE[source]?.[0] || RESEARCH_MAP[source][1] }))
+      };
+    }
+    const today = new Date();
+    const todayInYear = today.getFullYear() === YEAR;
+    let selectedMonth = todayInYear ? today.getMonth() : 0;
+    let selectedDay = todayInYear ? today.getDate() : 1;
+    let displayedMonth = selectedMonth;
+
+    const datesNode = document.getElementById("dates");
+    const monthsNode = document.getElementById("months");
+    const dayCard = document.getElementById("day-card");
+    const eventList = document.getElementById("event-list");
+    const escapeHtml = text => String(text).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+
+    function renderMonths() {
+      monthsNode.innerHTML = monthNames.map((name, index) => `<button type="button" data-month="${index}" class="${index === displayedMonth ? "active" : ""}" aria-pressed="${index === displayedMonth}">${index + 1}月</button>`).join("");
+    }
+
+    function renderCalendar() {
+      document.getElementById("month-title").textContent = `${monthNames[displayedMonth]} · ${YEAR}`;
+      document.getElementById("prev-month").disabled = displayedMonth === 0;
+      document.getElementById("next-month").disabled = displayedMonth === 11;
+      document.getElementById("today-button").hidden = !todayInYear;
+      const count = new Date(YEAR, displayedMonth + 1, 0).getDate();
+      const offset = (new Date(YEAR, displayedMonth, 1).getDay() + 6) % 7;
+      let cells = Array.from({ length: offset }, () => '<div class="date-blank" role="presentation"></div>');
+      for (let day = 1; day <= count; day++) {
+        const key = keyOf(displayedMonth, day);
+        const data = getData(displayedMonth, day);
+        const rest = restDays.has(key);
+        const work = adjustedWorkdays.has(key);
+        const memorial = data.kind === "memorial";
+        const isToday = todayInYear && displayedMonth === today.getMonth() && day === today.getDate();
+        const selected = displayedMonth === selectedMonth && day === selectedDay;
+        const secondary = memorial ? "肃穆纪念" : `宜 ${data.good[0].action}`;
+        const label = `${YEAR}年${displayedMonth + 1}月${day}日，${data.name}${rest ? "，放假" : work ? "，调休上班" : ""}`;
+        cells.push(`<button type="button" role="gridcell" class="date ${selected ? "selected" : ""} ${isToday ? "today" : ""} ${rest ? "rest-date" : ""} ${data.kind ? "has-event" : ""} ${memorial ? "memorial-date" : ""}" data-day="${day}" aria-label="${escapeHtml(label)}" aria-selected="${selected}" ${isToday ? 'aria-current="date"' : ""}><span class="date-number">${day}</span>${rest || work ? `<span class="status-chip ${work ? "work" : ""}" aria-hidden="true">${work ? "班" : "休"}</span>` : ""}<span class="date-label">${escapeHtml(data.kind ? data.name : `原宜 · ${data.good[0].source}`)}</span><span class="date-advice">${escapeHtml(secondary)}</span></button>`);
+      }
+      datesNode.innerHTML = cells.join("");
+    }
+
+    function renderDetail() {
+      const date = new Date(YEAR, selectedMonth, selectedDay);
+      const key = keyOf(selectedMonth, selectedDay);
+      const data = getData(selectedMonth, selectedDay);
+      const memorial = data.kind === "memorial";
+      const status = restDays.has(key) ? "放假" : adjustedWorkdays.has(key) ? "调休上班" : isWeekend(date) ? "周末" : "工作日";
+      const source = data.source ? `<a class="source-link" href="${data.source}" target="_blank" rel="noopener noreferrer">查看日期资料 ↗</a>` : "";
+      const renderPairs = entries => entries.map(item => `<div class="advice-pair"><span class="advice-origin">${escapeHtml(item.source)}</span><span class="advice-arrow">→</span><span class="advice-result">${escapeHtml(item.action)}</span></div>`).join("");
+      const original = `<details class="almanac-details"><summary>核对当天完整原始宜忌</summary><p><b>原宜</b> ${escapeHtml(data.originalYi.join(" · "))}</p><p><b>原忌</b> ${escapeHtml(data.originalJi.join(" · "))}</p></details>`;
+      dayCard.classList.toggle("memorial", memorial);
+      dayCard.innerHTML = `<div class="detail-head"><div class="detail-topline"><span>${memorial ? "IN REMEMBRANCE" : "ALMANAC × RESEARCH"}</span><span class="detail-status">${status}</span></div><div class="detail-date"><strong>${selectedDay}</strong><div>${YEAR} 年 ${selectedMonth + 1} 月<br>${weekdays[date.getDay()]}</div></div><p class="detail-name">${escapeHtml(data.name)}</p></div><div class="detail-body">${memorial ? `<p class="detail-description">${escapeHtml(data.text)}</p><div class="memorial-note">${escapeHtml(data.note)}</div>` : `<div class="advice-block"><h3 class="advice-title good">宜 · 黄历 → 科研</h3><div class="advice-items">${renderPairs(data.good)}</div></div><div class="advice-block bad"><h3 class="advice-title bad">忌 · 黄历 → 科研</h3><div class="advice-items">${data.bad.length ? renderPairs(data.bad) : '<div class="advice-pair"><span class="advice-origin">无</span><span class="advice-arrow">→</span><span class="advice-result">原黄历未列忌项</span></div>'}</div></div>${original}`}${source}</div>`;
+    }
+
+    function renderEvents() {
+      const prefix = `${pad(displayedMonth + 1)}-`;
+      const entries = Object.entries(special).filter(([key]) => key.startsWith(prefix)).sort(([a], [b]) => a.localeCompare(b));
+      eventList.innerHTML = entries.length ? entries.map(([key, data]) => `<button type="button" data-event-day="${Number(key.slice(3))}"><span class="event-day">${key.slice(3)}</span><span class="event-title">${escapeHtml(data.name)}</span><span class="event-kind">${data.kind === "memorial" ? "纪念" : data.kind === "science" ? "科研" : "节日"}</span></button>`).join("") : '<p class="empty-events">本月没有单独标注的节日。普通日期仍有每日科研宜忌。</p>';
+    }
+
+    function render() {
+      renderMonths();
+      renderCalendar();
+      renderDetail();
+      renderEvents();
+    }
+    function selectDate(month, day, focus = false) {
+      selectedMonth = month;
+      selectedDay = day;
+      displayedMonth = month;
+      render();
+      if (focus) datesNode.querySelector(`[data-day="${day}"]`)?.focus();
+    }
+    function changeMonth(direction) {
+      const month = Math.min(11, Math.max(0, displayedMonth + direction));
+      selectDate(month, Math.min(selectedDay, new Date(YEAR, month + 1, 0).getDate()));
+    }
+    document.getElementById("prev-month").addEventListener("click", () => changeMonth(-1));
+    document.getElementById("next-month").addEventListener("click", () => changeMonth(1));
+    document.getElementById("today-button").addEventListener("click", () => selectDate(today.getMonth(), today.getDate()));
+    monthsNode.addEventListener("click", event => {
+      const button = event.target.closest("button[data-month]");
+      if (button) selectDate(Number(button.dataset.month), Math.min(selectedDay, new Date(YEAR, Number(button.dataset.month) + 1, 0).getDate()));
+    });
+    datesNode.addEventListener("click", event => {
+      const button = event.target.closest("button[data-day]");
+      if (button) selectDate(displayedMonth, Number(button.dataset.day));
+    });
+    datesNode.addEventListener("keydown", event => {
+      const button = event.target.closest("button[data-day]");
+      if (!button) return;
+      const delta = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[event.key];
+      if (delta === undefined && !["Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      if (event.key === "Home") return selectDate(displayedMonth, 1, true);
+      if (event.key === "End") return selectDate(displayedMonth, new Date(YEAR, displayedMonth + 1, 0).getDate(), true);
+      const next = new Date(YEAR, displayedMonth, Number(button.dataset.day) + delta);
+      if (next.getFullYear() === YEAR) selectDate(next.getMonth(), next.getDate(), true);
+    });
+    eventList.addEventListener("click", event => {
+      const button = event.target.closest("button[data-event-day]");
+      if (button) selectDate(displayedMonth, Number(button.dataset.eventDay));
+    });
+    render();
+  </script>
+</body>
+</html>
